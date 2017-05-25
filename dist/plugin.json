@@ -1,0 +1,29 @@
+{
+  "type": "panel",
+  "name": "CruiseTrack",
+  "id": "armbrustlab-cruisetrack-panel",
+
+  "info": {
+    "description": "Cruise track for Grafana",
+    "author": {
+      "name": "Armbrust Lab",
+      "url": "http://armbrustlab.ocean.washington.edu"
+    },
+    "keywords": ["leaflet", "panel"],
+    "logos": {
+      "small": "img/clock_panel_logo.svg",
+      "large": "img/clock_panel_logo.svg"
+    },
+    "links": [
+      {"name": "Project site", "url": "https://github.com/ctberthiaume/armbrustlab-cruisetrack-panel"}
+    ],
+    "screenshots": [ ],
+    "version": "0.0.1",
+    "updated": "2017-05-25"
+  },
+
+  "dependencies": {
+    "grafanaVersion": "4.x.x",
+    "plugins": [ ]
+  }
+}

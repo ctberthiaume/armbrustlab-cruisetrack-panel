@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/module.js"],"names":["CruiseTrackPanelCtrl"],"mappings":";;;;;;;;AAAQA,0B,SAAAA,oB;;;2BAGNA,oB","file":"module.js","sourcesContent":["import {CruiseTrackPanelCtrl} from  './ctrl';\n\nexport {\n  CruiseTrackPanelCtrl as PanelCtrl\n};\n"]}
