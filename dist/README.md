@@ -1,5 +1,10 @@
 # Grafana cruise track Leaflet map panel
 
+* Create two InfluxDB queries
+* One should return decimal degree latitude values, aliased as lat or latitude
+* One should return decimal degree longitude values, aliased as lon or longitude
+
+
 ### Install
 
 ```

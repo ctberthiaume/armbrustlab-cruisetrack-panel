@@ -16,6 +16,9 @@ export default function link(scope, elem, attrs, ctrl) {
     //if (!ctrl.mapdata || ctrl.mapdata.length === 0) return;
 
     if (!ctrl.map) {
+      // Clear any old leaflet map in map container div
+      $(mapContainer[0]).empty();
+      // New map!
       ctrl.map = new WorldMap(ctrl, mapContainer[0]);
     }
 

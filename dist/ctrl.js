@@ -70,7 +70,9 @@ System.register(['app/plugins/sdk', 'lodash', 'jquery', 'app/core/time_series2',
         mapCenterLatitude: 0,
         mapCenterLongitude: 0,
         initialZoom: 1,
-        tileServer: 'CartoDB Positron'
+        tileServerUrl: 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
+        tileServerAttribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+        tileServerSubdomains: 'abcd'
       };
 
       _export('CruiseTrackPanelCtrl', CruiseTrackPanelCtrl = function (_MetricsPanelCtrl) {
@@ -84,13 +86,32 @@ System.register(['app/plugins/sdk', 'lodash', 'jquery', 'app/core/time_series2',
           _.defaults(_this.panel, panelDefaults);
           _this.series = [];
           _this.mapdata = [];
+          _this.debouncedChange = _.debounce(function () {
+            if (_this.map) {
+              // erase map
+              _this.map.remove();
+              _this.map = undefined;
+            }
+            _this.render();
+          }, 3000);
           _this.events.on('data-received', _this.onDataReceived.bind(_this));
           _this.events.on('data-error', _this.onDataError.bind(_this));
           _this.events.on('data-snapshot-load', _this.onDataReceived.bind(_this));
+          _this.events.on('init-edit-mode', _this.onInitEditMode.bind(_this));
           return _this;
         }
 
         _createClass(CruiseTrackPanelCtrl, [{
+          key: 'onInitEditMode',
+          value: function onInitEditMode() {
+            this.addEditorTab('Options', 'public/plugins/armbrustlab-cruisetrack-panel/edit.html', 2);
+          }
+        }, {
+          key: 'editChanged',
+          value: function editChanged() {
+            this.debouncedChange();
+          }
+        }, {
           key: 'onDataError',
           value: function onDataError(err) {
             this.onDataReceived([]);

@@ -3,7 +3,7 @@
 System.register(['lodash', './external/leaflet/leaflet', './external/leaflet/L.Control.MousePosition'], function (_export, _context) {
   "use strict";
 
-  var _, L, _createClass, tileServers, WorldMap;
+  var _, L, _createClass, WorldMap;
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -36,11 +36,6 @@ System.register(['lodash', './external/leaflet/leaflet', './external/leaflet/L.C
         };
       }();
 
-      tileServers = {
-        'CartoDB Positron': { url: 'http://localhost:3050/{z}/{x}/{y}.png', attribution: '&copy; <a href="http://www.naturalearthdata.com/about/terms-of-use/">Made with Natural Earth</a>', subdomains: 'abcd' },
-        'CartoDB Dark': { url: 'http://localhost:3050/{z}/{x}/{y}.png', attribution: '&copy; <a href="http://www.naturalearthdata.com/about/terms-of-use/">Made with Natural Earth</a>', subdomains: 'abcd' }
-      };
-
       WorldMap = function () {
         function WorldMap(ctrl, mapContainer) {
           _classCallCheck(this, WorldMap);
@@ -59,13 +54,15 @@ System.register(['lodash', './external/leaflet/leaflet', './external/leaflet/L.C
             this.map = window.L.map(this.mapContainer, { worldCopyJump: true, center: mapCenter, scrollWheelZoom: false }).fitWorld().zoomIn(parseInt(this.ctrl.panel.initialZoom, 10));
             this.map.panTo(mapCenter);
 
-            var selectedTileServer = tileServers[this.ctrl.panel.tileServer];
-            window.L.tileLayer(selectedTileServer.url, {
+            var tileServerUrl = this.ctrl.panel.tileServerUrl;
+            var attribution = this.ctrl.panel.tileServerAttribution;
+            var subdomains = this.ctrl.panel.tileServerSubdomains;
+            window.L.tileLayer(tileServerUrl, {
               maxZoom: 18,
-              subdomains: selectedTileServer.subdomains,
               reuseTiles: true,
               detectRetina: true,
-              attribution: selectedTileServer.attribution
+              subdomains: subdomains,
+              attribution: attribution
             }).addTo(this.map);
 
             window.L.control.mousePosition({

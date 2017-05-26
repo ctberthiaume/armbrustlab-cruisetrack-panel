@@ -3,11 +3,6 @@ import _ from 'lodash';
 import L from './external/leaflet/leaflet';
 import './external/leaflet/L.Control.MousePosition';
 
-const tileServers = {
-  'CartoDB Positron': { url: 'http://localhost:3050/{z}/{x}/{y}.png', attribution: '&copy; <a href="http://www.naturalearthdata.com/about/terms-of-use/">Made with Natural Earth</a>', subdomains: 'abcd'},
-  'CartoDB Dark': {url: 'http://localhost:3050/{z}/{x}/{y}.png', attribution: '&copy; <a href="http://www.naturalearthdata.com/about/terms-of-use/">Made with Natural Earth</a>', subdomains: 'abcd'}
-};
-
 export default class WorldMap {
   constructor(ctrl, mapContainer) {
     this.ctrl = ctrl;
@@ -24,13 +19,15 @@ export default class WorldMap {
       .zoomIn(parseInt(this.ctrl.panel.initialZoom, 10));
     this.map.panTo(mapCenter);
 
-    const selectedTileServer = tileServers[this.ctrl.panel.tileServer];
-    window.L.tileLayer(selectedTileServer.url, {
+    const tileServerUrl = this.ctrl.panel.tileServerUrl;
+    const attribution = this.ctrl.panel.tileServerAttribution;
+    const subdomains = this.ctrl.panel.tileServerSubdomains;
+    window.L.tileLayer(tileServerUrl, {
       maxZoom: 18,
-      subdomains: selectedTileServer.subdomains,
       reuseTiles: true,
       detectRetina: true,
-      attribution: selectedTileServer.attribution
+      subdomains: subdomains,
+      attribution: attribution
     }).addTo(this.map);
 
     window.L.control.mousePosition({

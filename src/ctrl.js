@@ -8,7 +8,9 @@ const panelDefaults = {
   mapCenterLatitude: 0,
   mapCenterLongitude: 0,
   initialZoom: 1,
-  tileServer: 'CartoDB Positron',
+  tileServerUrl: 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
+  tileServerAttribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+  tileServerSubdomains: 'abcd'
 };
 
 export class CruiseTrackPanelCtrl extends MetricsPanelCtrl {
@@ -17,9 +19,26 @@ export class CruiseTrackPanelCtrl extends MetricsPanelCtrl {
     _.defaults(this.panel, panelDefaults);
     this.series = [];
     this.mapdata = [];
+    this.debouncedChange = _.debounce(() => {
+      if (this.map) {
+        // erase map
+        this.map.remove();
+        this.map = undefined;
+      }
+      this.render();
+    }, 3000);
     this.events.on('data-received', this.onDataReceived.bind(this));
     this.events.on('data-error', this.onDataError.bind(this));
     this.events.on('data-snapshot-load', this.onDataReceived.bind(this));
+    this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
+  }
+
+  onInitEditMode() {
+    this.addEditorTab('Options', 'public/plugins/armbrustlab-cruisetrack-panel/edit.html', 2);
+  }
+
+  editChanged() {
+    this.debouncedChange();
   }
 
   onDataError(err) {
