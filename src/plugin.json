@@ -18,8 +18,8 @@
       {"name": "Project site", "url": "https://github.com/ctberthiaume/armbrustlab-cruisetrack-panel"}
     ],
     "screenshots": [ ],
-    "version": "0.0.1",
-    "updated": "2017-05-25"
+    "version": "0.2.0",
+    "updated": "2017-06-06"
   },
 
   "dependencies": {

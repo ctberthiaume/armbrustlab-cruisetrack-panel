@@ -136,7 +136,7 @@ System.register(['app/plugins/sdk', 'lodash', 'jquery', 'app/core/time_series2',
                 mapdata.push({
                   lat: lat[0],
                   lon: lons[i][0],
-                  date: lat[1]
+                  time: lat[1]
                 });
               });
               this.mapdata = mapdata;

@@ -42,8 +42,11 @@ export default class WorldMap {
     //console.log('drawTrack()');
     const data = this.filterEmptyData(this.ctrl.mapdata);
     this.clearTrack();
+    // Keep all track layers in one FeatureGroup
+    this.trackLayer = L.featureGroup([]).addTo(this.map);
     if (data.length) {
-      this.createTrackLayer(data);
+      this.trackLayer.addLayer(this.createTrackLine(data));
+      this.trackLayer.addLayer(this.createLatestMarker(data));
     }
   }
 
@@ -51,22 +54,32 @@ export default class WorldMap {
     if (this.trackLayer) this.map.removeLayer(this.trackLayer);
   }
 
-  createTrackLayer(data) {
+  createTrackLine(data) {
     //console.log('createTrackLayer()');
     const linedata = data.map(doc => [doc.lat, doc.lon]);
-    const cruiseLine = L.polyline(linedata, {
+    return L.polyline(linedata, {
       color: '#3d3d5c',
       smoothFactor: 3,
       opacity: 0.75,
       weight: 3
     });
-    this.trackLayer = L.featureGroup([cruiseLine]).addTo(this.map);
   }
 
   zoomToTrack() {
     if (this.trackLayer) {
       this.map.fitBounds(this.trackLayer.getBounds(), {padding: [50, 50]});
     }
+  }
+
+  createLatestMarker(data) {
+    const latest = _.last(data);
+    const marker = L.marker([latest.lat, latest.lon]);
+    const time = new Date(latest.time);
+    const timeDisplay = this.ctrl.dashboard.formatDate(time, 'YYYY-MM-DD HH:mm:ss');
+    let html = `<div style='text-align: center'"><b>${timeDisplay}</b></div>`;
+    html += `<div style='text-align: center'>Recent location [${latest.lat.toFixed(2)}, ${latest.lon.toFixed(2)}]</div>`;
+    marker.bindPopup(html);
+    return marker;
   }
 
   createLegend() {

@@ -82,8 +82,11 @@ System.register(['lodash', './external/leaflet/leaflet', './external/leaflet/L.C
             //console.log('drawTrack()');
             var data = this.filterEmptyData(this.ctrl.mapdata);
             this.clearTrack();
+            // Keep all track layers in one FeatureGroup
+            this.trackLayer = L.featureGroup([]).addTo(this.map);
             if (data.length) {
-              this.createTrackLayer(data);
+              this.trackLayer.addLayer(this.createTrackLine(data));
+              this.trackLayer.addLayer(this.createLatestMarker(data));
             }
           }
         }, {
@@ -92,19 +95,18 @@ System.register(['lodash', './external/leaflet/leaflet', './external/leaflet/L.C
             if (this.trackLayer) this.map.removeLayer(this.trackLayer);
           }
         }, {
-          key: 'createTrackLayer',
-          value: function createTrackLayer(data) {
+          key: 'createTrackLine',
+          value: function createTrackLine(data) {
             //console.log('createTrackLayer()');
             var linedata = data.map(function (doc) {
               return [doc.lat, doc.lon];
             });
-            var cruiseLine = L.polyline(linedata, {
+            return L.polyline(linedata, {
               color: '#3d3d5c',
               smoothFactor: 3,
               opacity: 0.75,
               weight: 3
             });
-            this.trackLayer = L.featureGroup([cruiseLine]).addTo(this.map);
           }
         }, {
           key: 'zoomToTrack',
@@ -112,6 +114,18 @@ System.register(['lodash', './external/leaflet/leaflet', './external/leaflet/L.C
             if (this.trackLayer) {
               this.map.fitBounds(this.trackLayer.getBounds(), { padding: [50, 50] });
             }
+          }
+        }, {
+          key: 'createLatestMarker',
+          value: function createLatestMarker(data) {
+            var latest = _.last(data);
+            var marker = L.marker([latest.lat, latest.lon]);
+            var time = new Date(latest.time);
+            var timeDisplay = this.ctrl.dashboard.formatDate(time, 'YYYY-MM-DD HH:mm:ss');
+            var html = '<div style=\'text-align: center\'"><b>' + timeDisplay + '</b></div>';
+            html += '<div style=\'text-align: center\'>Recent location [' + latest.lat.toFixed(2) + ', ' + latest.lon.toFixed(2) + ']</div>';
+            marker.bindPopup(html);
+            return marker;
           }
         }, {
           key: 'createLegend',

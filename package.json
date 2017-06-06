@@ -1,6 +1,6 @@
 {
   "name": "armbrustlab-cruisetrack-panel",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "Cruise track for Grafana",
   "main": "src/module.js",
   "scripts": {
