@@ -31,6 +31,7 @@ export class CruiseTrackPanelCtrl extends MetricsPanelCtrl {
     this.events.on('data-error', this.onDataError.bind(this));
     this.events.on('data-snapshot-load', this.onDataReceived.bind(this));
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
+    window.control = this;
   }
 
   onInitEditMode() {

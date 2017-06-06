@@ -98,6 +98,7 @@ System.register(['app/plugins/sdk', 'lodash', 'jquery', 'app/core/time_series2',
           _this.events.on('data-error', _this.onDataError.bind(_this));
           _this.events.on('data-snapshot-load', _this.onDataReceived.bind(_this));
           _this.events.on('init-edit-mode', _this.onInitEditMode.bind(_this));
+          window.control = _this;
           return _this;
         }
 

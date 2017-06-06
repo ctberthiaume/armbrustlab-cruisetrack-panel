@@ -51,7 +51,12 @@ System.register(['lodash', './external/leaflet/leaflet', './external/leaflet/L.C
           key: 'createMap',
           value: function createMap() {
             var mapCenter = window.L.latLng(parseFloat(this.ctrl.panel.mapCenterLatitude), parseFloat(this.ctrl.panel.mapCenterLongitude));
-            this.map = window.L.map(this.mapContainer, { worldCopyJump: true, center: mapCenter, scrollWheelZoom: false }).fitWorld().zoomIn(parseInt(this.ctrl.panel.initialZoom, 10));
+            this.map = window.L.map(this.mapContainer, {
+              worldCopyJump: true,
+              center: mapCenter,
+              scrollWheelZoom: false,
+              maxZoom: 9
+            }).fitWorld().zoomIn(parseInt(this.ctrl.panel.initialZoom, 10));
             this.map.panTo(mapCenter);
 
             var tileServerUrl = this.ctrl.panel.tileServerUrl;
@@ -86,7 +91,10 @@ System.register(['lodash', './external/leaflet/leaflet', './external/leaflet/L.C
             this.trackLayer = L.featureGroup([]).addTo(this.map);
             if (data.length) {
               this.trackLayer.addLayer(this.createTrackLine(data));
-              this.trackLayer.addLayer(this.createLatestMarker(data));
+              if (this.pinnedToNow()) {
+                // Only draw circle if the selected time range extends to 'now'
+                this.trackLayer.addLayer(this.createLatestCircle(data));
+              }
             }
           }
         }, {
@@ -112,20 +120,32 @@ System.register(['lodash', './external/leaflet/leaflet', './external/leaflet/L.C
           key: 'zoomToTrack',
           value: function zoomToTrack() {
             if (this.trackLayer) {
+              console.log('zooming to ' + this.trackLayer.getBounds());
               this.map.fitBounds(this.trackLayer.getBounds(), { padding: [50, 50] });
             }
           }
         }, {
-          key: 'createLatestMarker',
-          value: function createLatestMarker(data) {
+          key: 'createLatestCircle',
+          value: function createLatestCircle(data) {
             var latest = _.last(data);
-            var marker = L.marker([latest.lat, latest.lon]);
+            var circle = L.circleMarker([latest.lat, latest.lon], {
+              color: 'red',
+              fillCOlor: '#f03',
+              fillOpacity: 0.5,
+              radius: 8
+            });
             var time = new Date(latest.time);
             var timeDisplay = this.ctrl.dashboard.formatDate(time, 'YYYY-MM-DD HH:mm:ss');
             var html = '<div style=\'text-align: center\'"><b>' + timeDisplay + '</b></div>';
             html += '<div style=\'text-align: center\'>Recent location [' + latest.lat.toFixed(2) + ', ' + latest.lon.toFixed(2) + ']</div>';
-            marker.bindPopup(html);
-            return marker;
+            circle.bindPopup(html);
+            return circle;
+          }
+        }, {
+          key: 'pinnedToNow',
+          value: function pinnedToNow() {
+            // Does the selected time range extend to right now?
+            return this.ctrl.dashboard.time.to === 'now';
           }
         }, {
           key: 'createLegend',

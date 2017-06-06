@@ -14,7 +14,12 @@ export default class WorldMap {
 
   createMap() {
     const mapCenter = window.L.latLng(parseFloat(this.ctrl.panel.mapCenterLatitude), parseFloat(this.ctrl.panel.mapCenterLongitude));
-    this.map = window.L.map(this.mapContainer, {worldCopyJump: true, center: mapCenter, scrollWheelZoom: false})
+    this.map = window.L.map(this.mapContainer, {
+      worldCopyJump: true,
+      center: mapCenter,
+      scrollWheelZoom: false,
+      maxZoom: 9
+    })
       .fitWorld()
       .zoomIn(parseInt(this.ctrl.panel.initialZoom, 10));
     this.map.panTo(mapCenter);
@@ -46,7 +51,10 @@ export default class WorldMap {
     this.trackLayer = L.featureGroup([]).addTo(this.map);
     if (data.length) {
       this.trackLayer.addLayer(this.createTrackLine(data));
-      this.trackLayer.addLayer(this.createLatestMarker(data));
+      if (this.pinnedToNow()) {
+        // Only draw circle if the selected time range extends to 'now'
+        this.trackLayer.addLayer(this.createLatestCircle(data));
+      }
     }
   }
 
@@ -67,19 +75,30 @@ export default class WorldMap {
 
   zoomToTrack() {
     if (this.trackLayer) {
+      console.log('zooming to ' + this.trackLayer.getBounds());
       this.map.fitBounds(this.trackLayer.getBounds(), {padding: [50, 50]});
     }
   }
 
-  createLatestMarker(data) {
+  createLatestCircle(data) {
     const latest = _.last(data);
-    const marker = L.marker([latest.lat, latest.lon]);
+    const circle = L.circleMarker([latest.lat, latest.lon], {
+      color: 'red',
+      fillCOlor: '#f03',
+      fillOpacity: 0.5,
+      radius: 8
+    });
     const time = new Date(latest.time);
     const timeDisplay = this.ctrl.dashboard.formatDate(time, 'YYYY-MM-DD HH:mm:ss');
     let html = `<div style='text-align: center'"><b>${timeDisplay}</b></div>`;
     html += `<div style='text-align: center'>Recent location [${latest.lat.toFixed(2)}, ${latest.lon.toFixed(2)}]</div>`;
-    marker.bindPopup(html);
-    return marker;
+    circle.bindPopup(html);
+    return circle;
+  }
+
+  pinnedToNow() {
+    // Does the selected time range extend to right now?
+    return this.ctrl.dashboard.time.to === 'now';
   }
 
   createLegend() {

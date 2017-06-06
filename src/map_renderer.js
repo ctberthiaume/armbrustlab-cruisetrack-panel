@@ -27,6 +27,7 @@ export default function link(scope, elem, attrs, ctrl) {
     //if (ctrl.mapCenterMoved) ctrl.map.panToMapCenter();
 
     ctrl.map.drawTrack();
-    ctrl.map.zoomToTrack();
+    // Bit of a hack, immediately zooming only works intermittently
+    setTimeout(ctrl.map.zoomToTrack.bind(ctrl.map), 1000);
   }
 }

@@ -29,7 +29,8 @@ System.register(['./external/leaflet/leaflet.css!', './external/leaflet/L.Contro
       //if (ctrl.mapCenterMoved) ctrl.map.panToMapCenter();
 
       ctrl.map.drawTrack();
-      ctrl.map.zoomToTrack();
+      // Bit of a hack, immediately zooming only works intermittently
+      setTimeout(ctrl.map.zoomToTrack.bind(ctrl.map), 1000);
     }
   }
 
